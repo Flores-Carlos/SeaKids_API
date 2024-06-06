@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.gs</groupId>
-	<artifactId>sea_kids</artifactId>
+	<artifactId>SeaKids_API</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>sea_kids</name>
 	<description>Java Sprint</description>
