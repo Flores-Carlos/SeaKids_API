@@ -1,4 +1,5 @@
 # SeaKids_API
+Qualquer outra informação que não estiver aqui pode ser encontrada na pasta "documents".
 
 ## Aplicação:
 SeaKids
@@ -30,6 +31,3 @@ https://www.youtube.com/watch?v=DoZ4UyfEhGY
 
 ## Deploy da API:
 https://seakids-api.onrender.com
-
----
-Qualquer outra informação pode ser encontrada na pasta "documents".
