@@ -22,11 +22,14 @@ SeaKids
 - ### Rodar na nuvem:
   - A URL da API em produção é https://seakids-api.onrender.com.
 
-## Deploy da API:
-https://seakids-api.onrender.com
-
 ## Pitch do projeto:
 https://www.youtube.com/watch?v=w7IIUgwQPbY
 
 ## Demonstração do projeto:
 https://www.youtube.com/watch?v=DoZ4UyfEhGY
+
+## Deploy da API:
+https://seakids-api.onrender.com
+
+---
+Qualquer outra informação pode ser encontrada na pasta "documents".
