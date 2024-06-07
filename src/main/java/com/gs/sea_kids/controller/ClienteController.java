@@ -3,6 +3,9 @@ package com.gs.sea_kids.controller;
 import com.gs.sea_kids.exception.ResourceNotFoundException;
 import com.gs.sea_kids.model.Cliente;
 import com.gs.sea_kids.repo.ClienteRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -29,6 +32,11 @@ public class ClienteController {
     private ClienteRepo clienteRepo;
 
     @GetMapping
+    @Operation(summary = "Lista todos os clientes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao listar os clientes"),
+            @ApiResponse(responseCode = "404", description = "Nenhum cliente encontrado")
+    })
     public ResponseEntity<CollectionModel<EntityModel<Cliente>>> getClientes(@RequestParam(defaultValue = "0") int page,
                                                                              @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -47,6 +55,11 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtém detalhes de um cliente específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao obter detalhes do cliente"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
     public ResponseEntity<EntityModel<Cliente>> getCliente(@PathVariable Long id) {
         Cliente cliente = clienteRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado pelo id :: " + id));
@@ -59,6 +72,11 @@ public class ClienteController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria um novo cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sucesso ao criar um novo cliente"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida")
+    })
     public ResponseEntity<EntityModel<Cliente>> saveCliente(@Valid @RequestBody Cliente cliente) {
         Cliente savedCliente = clienteRepo.save(cliente);
 
@@ -70,6 +88,12 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um cliente existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao atualizar o cliente"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
     public ResponseEntity<EntityModel<Cliente>> updateCliente(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
         Cliente existingCliente = clienteRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado pelo id :: " + id));
@@ -86,6 +110,11 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta um cliente existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sucesso ao deletar o cliente"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
     public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
         Cliente existingCliente = clienteRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado pelo id :: " + id));

@@ -3,6 +3,9 @@ package com.gs.sea_kids.controller;
 import com.gs.sea_kids.exception.ResourceNotFoundException;
 import com.gs.sea_kids.model.Cadastro;
 import com.gs.sea_kids.repo.CadastroRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/cadastros")
@@ -30,6 +33,11 @@ public class CadastroController {
     private CadastroRepo cadastroRepo;
 
     @GetMapping
+    @Operation(summary = "Lista todos os cadastros")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao listar os cadastros"),
+            @ApiResponse(responseCode = "404", description = "Nenhum cadastro encontrado")
+    })
     public ResponseEntity<CollectionModel<EntityModel<Cadastro>>> getCadastros(@RequestParam(defaultValue = "0") int page,
                                                                                @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -48,6 +56,11 @@ public class CadastroController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtém detalhes de um cadastro específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao obter detalhes do cadastro"),
+            @ApiResponse(responseCode = "404", description = "Cadastro não encontrado")
+    })
     public ResponseEntity<EntityModel<Cadastro>> getCadastro(@PathVariable Long id) {
         Cadastro cadastro = cadastroRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cadastro não encontrado pelo id :: " + id));
@@ -60,6 +73,12 @@ public class CadastroController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Cria um novo cadastro")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sucesso ao criar um novo cadastro"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida")
+    })
     public ResponseEntity<EntityModel<Cadastro>> saveCadastro(@Valid @RequestBody Cadastro cadastro) {
         Cadastro savedCadastro = cadastroRepo.save(cadastro);
 
@@ -71,6 +90,12 @@ public class CadastroController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um cadastro existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao atualizar o cadastro"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "404", description = "Cadastro não encontrado")
+    })
     public ResponseEntity<EntityModel<Cadastro>> updateCadastro(@PathVariable Long id, @Valid @RequestBody Cadastro cadastro) {
         Cadastro existingCadastro = cadastroRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cadastro não encontrado pelo id :: " + id));
@@ -88,6 +113,11 @@ public class CadastroController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta um cadastro existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sucesso ao deletar o cadastro"),
+            @ApiResponse(responseCode = "404", description = "Cadastro não encontrado")
+    })
     public ResponseEntity<Void> deleteCadastro(@PathVariable Long id) {
         Cadastro existingCadastro = cadastroRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cadastro não encontrado pelo id :: " + id));

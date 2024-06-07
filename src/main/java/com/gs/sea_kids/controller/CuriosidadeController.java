@@ -3,6 +3,9 @@ package com.gs.sea_kids.controller;
 import com.gs.sea_kids.exception.ResourceNotFoundException;
 import com.gs.sea_kids.model.Curiosidade;
 import com.gs.sea_kids.repo.CuriosidadeRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -15,9 +18,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,12 +28,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Validated
 public class CuriosidadeController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CuriosidadeController.class);
-
     @Autowired
     private CuriosidadeRepo curiosidadeRepo;
 
     @GetMapping
+    @Operation(summary = "Lista todas as curiosidades")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao listar as curiosidades"),
+            @ApiResponse(responseCode = "404", description = "Nenhuma curiosidade encontrada")
+    })
     public ResponseEntity<CollectionModel<EntityModel<Curiosidade>>> getCuriosidades(@RequestParam(defaultValue = "0") int page,
                                                                                      @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -52,6 +55,11 @@ public class CuriosidadeController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtém detalhes de uma curiosidade específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao obter detalhes da curiosidade"),
+            @ApiResponse(responseCode = "404", description = "Curiosidade não encontrada")
+    })
     public ResponseEntity<EntityModel<Curiosidade>> getCuriosidade(@PathVariable Long id) {
         Curiosidade curiosidade = curiosidadeRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Curiosidade não encontrada pelo id :: " + id));
@@ -64,8 +72,12 @@ public class CuriosidadeController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria uma nova curiosidade")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sucesso ao criar uma nova curiosidade"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida")
+    })
     public ResponseEntity<EntityModel<Curiosidade>> saveCuriosidade(@Valid @RequestBody Curiosidade curiosidade) {
-
         Curiosidade savedCuriosidade = curiosidadeRepo.save(curiosidade);
 
         EntityModel<Curiosidade> curiosidadeModel = EntityModel.of(savedCuriosidade,
@@ -76,6 +88,12 @@ public class CuriosidadeController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza uma curiosidade existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao atualizar a curiosidade"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "404", description = "Curiosidade não encontrada")
+    })
     public ResponseEntity<EntityModel<Curiosidade>> updateCuriosidade(@PathVariable Long id, @Valid @RequestBody Curiosidade curiosidade) {
         Curiosidade existingCuriosidade = curiosidadeRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Curiosidade não encontrada pelo id :: " + id));
@@ -93,6 +111,11 @@ public class CuriosidadeController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta uma curiosidade existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sucesso ao deletar a curiosidade"),
+            @ApiResponse(responseCode = "404", description = "Curiosidade não encontrada")
+    })
     public ResponseEntity<Void> deleteCuriosidade(@PathVariable Long id) {
         Curiosidade existingCuriosidade = curiosidadeRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Curiosidade não encontrada pelo id :: " + id));

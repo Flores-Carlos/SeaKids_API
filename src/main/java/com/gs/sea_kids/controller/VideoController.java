@@ -3,6 +3,9 @@ package com.gs.sea_kids.controller;
 import com.gs.sea_kids.exception.ResourceNotFoundException;
 import com.gs.sea_kids.model.Video;
 import com.gs.sea_kids.repo.VideoRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -34,6 +37,11 @@ public class VideoController {
     private VideoRepo videoRepo;
 
     @GetMapping
+    @Operation(summary = "Lista todos os vídeos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao listar os vídeos"),
+            @ApiResponse(responseCode = "404", description = "Nenhum vídeo encontrado")
+    })
     public ResponseEntity<CollectionModel<EntityModel<Video>>> getVideos(@RequestParam(defaultValue = "0") int page,
                                                                          @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -52,6 +60,11 @@ public class VideoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtém detalhes de um vídeo específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao obter detalhes do vídeo"),
+            @ApiResponse(responseCode = "404", description = "Vídeo não encontrado")
+    })
     public ResponseEntity<EntityModel<Video>> getVideo(@PathVariable Long id) {
         Video video = videoRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vídeo não encontrado pelo id :: " + id));
@@ -64,6 +77,11 @@ public class VideoController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria um novo vídeo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sucesso ao criar um novo vídeo"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida")
+    })
     public ResponseEntity<EntityModel<Video>> saveVideo(@Valid @RequestBody Video video) {
 
         Video savedVideo = videoRepo.save(video);
@@ -76,6 +94,12 @@ public class VideoController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um vídeo existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao atualizar o vídeo"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "404", description = "Vídeo não encontrado")
+    })
     public ResponseEntity<EntityModel<Video>> updateVideo(@PathVariable Long id, @Valid @RequestBody Video video) {
         Video existingVideo = videoRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vídeo não encontrado pelo id :: " + id));
@@ -92,6 +116,11 @@ public class VideoController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta um vídeo existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sucesso ao deletar o vídeo"),
+            @ApiResponse(responseCode = "404", description = "Vídeo não encontrado")
+    })
     public ResponseEntity<Void> deleteVideo(@PathVariable Long id) {
         Video existingVideo = videoRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vídeo não encontrado pelo id :: " + id));

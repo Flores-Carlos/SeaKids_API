@@ -3,6 +3,9 @@ package com.gs.sea_kids.controller;
 import com.gs.sea_kids.exception.ResourceNotFoundException;
 import com.gs.sea_kids.model.Login;
 import com.gs.sea_kids.repo.LoginRepo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -34,6 +37,11 @@ public class LoginController {
     private LoginRepo loginRepo;
 
     @GetMapping
+    @Operation(summary = "Lista todos os logins")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao listar os logins"),
+            @ApiResponse(responseCode = "404", description = "Nenhum login encontrado")
+    })
     public ResponseEntity<CollectionModel<EntityModel<Login>>> getLogins(@RequestParam(defaultValue = "0") int page,
                                                                          @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -52,6 +60,11 @@ public class LoginController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtém detalhes de um login específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao obter detalhes do login"),
+            @ApiResponse(responseCode = "404", description = "Login não encontrado")
+    })
     public ResponseEntity<EntityModel<Login>> getLogin(@PathVariable Long id) {
         Login login = loginRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Login não encontrado pelo id :: " + id));
@@ -64,6 +77,11 @@ public class LoginController {
     }
 
     @PostMapping
+    @Operation(summary = "Cria um novo login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Sucesso ao criar um novo login"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida")
+    })
     public ResponseEntity<EntityModel<Login>> saveLogin(@Valid @RequestBody Login login) {
 
         Login savedLogin = loginRepo.save(login);
@@ -76,6 +94,12 @@ public class LoginController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um login existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso ao atualizar o login"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "404", description = "Login não encontrado")
+    })
     public ResponseEntity<EntityModel<Login>> updateLogin(@PathVariable Long id, @Valid @RequestBody Login login) {
         Login existingLogin = loginRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Login não encontrado pelo id :: " + id));
@@ -92,6 +116,11 @@ public class LoginController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta um login existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sucesso ao deletar o login"),
+            @ApiResponse(responseCode = "404", description = "Login não encontrado")
+    })
     public ResponseEntity<Void> deleteLogin(@PathVariable Long id) {
         Login existingLogin = loginRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Login não encontrado pelo id :: " + id));
