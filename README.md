@@ -1,5 +1,5 @@
 # SeaKids_API
-Qualquer outra informação que não estiver aqui pode ser encontrada na pasta "documents".
+Qualquer outra informação que não estiver aqui pode ser encontrada na pasta "documents" ou na documentação criada a partir das annotations do SWAGGER.
 
 ## Aplicação:
 SeaKids
