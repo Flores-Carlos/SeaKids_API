@@ -6,6 +6,9 @@ import com.gs.sea_kids.repo.ClienteRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -27,15 +29,19 @@ public class ClienteController {
     private ClienteRepo clienteRepo;
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EntityModel<Cliente>>> getClientes() {
-        List<EntityModel<Cliente>> clientes = clienteRepo.findAll().stream()
+    public ResponseEntity<CollectionModel<EntityModel<Cliente>>> getClientes(@RequestParam(defaultValue = "0") int page,
+                                                                             @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Cliente> clientePage = clienteRepo.findAll(pageable);
+
+        List<EntityModel<Cliente>> clientes = clientePage.stream()
                 .map(cliente -> EntityModel.of(cliente,
                         linkTo(methodOn(ClienteController.class).getCliente(cliente.getId())).withSelfRel(),
-                        linkTo(methodOn(ClienteController.class).getClientes()).withRel("clientes")))
+                        linkTo(methodOn(ClienteController.class).getClientes(page, size)).withRel("clientes")))
                 .collect(Collectors.toList());
 
         CollectionModel<EntityModel<Cliente>> collectionModel = CollectionModel.of(clientes);
-        collectionModel.add(linkTo(methodOn(ClienteController.class).getClientes()).withSelfRel());
+        collectionModel.add(linkTo(methodOn(ClienteController.class).getClientes(page, size)).withSelfRel());
 
         return ResponseEntity.ok(collectionModel);
     }
@@ -47,7 +53,7 @@ public class ClienteController {
 
         EntityModel<Cliente> clienteModel = EntityModel.of(cliente,
                 linkTo(methodOn(ClienteController.class).getCliente(id)).withSelfRel(),
-                linkTo(methodOn(ClienteController.class).getClientes()).withRel("clientes"));
+                linkTo(methodOn(ClienteController.class).getClientes(0, 10)).withRel("clientes"));
 
         return ResponseEntity.ok(clienteModel);
     }
@@ -58,7 +64,7 @@ public class ClienteController {
 
         EntityModel<Cliente> clienteModel = EntityModel.of(savedCliente,
                 linkTo(methodOn(ClienteController.class).getCliente(savedCliente.getId())).withSelfRel(),
-                linkTo(methodOn(ClienteController.class).getClientes()).withRel("clientes"));
+                linkTo(methodOn(ClienteController.class).getClientes(0, 10)).withRel("clientes"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clienteModel);
     }
@@ -74,7 +80,7 @@ public class ClienteController {
 
         EntityModel<Cliente> clienteModel = EntityModel.of(updatedCliente,
                 linkTo(methodOn(ClienteController.class).getCliente(updatedCliente.getId())).withSelfRel(),
-                linkTo(methodOn(ClienteController.class).getClientes()).withRel("clientes"));
+                linkTo(methodOn(ClienteController.class).getClientes(0, 10)).withRel("clientes"));
 
         return ResponseEntity.ok(clienteModel);
     }

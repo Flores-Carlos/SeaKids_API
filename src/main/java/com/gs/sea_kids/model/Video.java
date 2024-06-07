@@ -7,20 +7,21 @@ import jakarta.validation.constraints.Pattern;
 import java.util.List;
 
 @Entity
+@Table(name = "videos")
 public class Video {
 
+    @Column(name = "id_vd")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    @NotEmpty(message = "O título do vídeo não pode estar vazio")
+    @Column(name = "titulo_vd", length = 200)
     private String titulo;
-    @Column
-    @NotEmpty(message = "O link do vídeo não pode estar vazio")
-    private String link; // Atualizar tipo
+    @Column(name = "link_vd")
+    @Lob
+    private String link;
 
     @ManyToOne
-    @JoinColumn(name = "app_id")
+    @JoinColumn(name = "app_id_app")
     private App app;
 
     public Long getId() {

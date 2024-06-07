@@ -8,14 +8,13 @@ import java.util.List;
 @Entity
 public class App {
 
+    @Column(name = "id_app")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    @NotEmpty(message = "O nome do app não pode estar vazio")
+    @Column(name = "nm_app", length = 50)
     private String nome;
-    @Column
-    @NotEmpty(message = "A versão do app não pode estar vazia")
+    @Column(name = "versao_app", length = 50)
     private String versao;
 
     @OneToMany(mappedBy = "app", cascade = CascadeType.ALL)

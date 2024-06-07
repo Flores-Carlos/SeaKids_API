@@ -9,19 +9,18 @@ import java.util.List;
 @Entity
 public class Cliente {
 
+    @Column(name = "cl_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    @NotEmpty(message = "O nome do cliente não pode estar vazio")
+    @Column(name = "nm_cl", length = 100)
     private String nome;
-    @Column
-    @NotEmpty(message = "O email do cliente não pode estar vazio")
+    @Column(name = "email_cl", length = 100)
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "Formato de email inválido")
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "app_id")
+    @JoinColumn(name = "app_id_app")
     private App app;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)

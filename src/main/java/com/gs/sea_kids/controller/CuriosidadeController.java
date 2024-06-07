@@ -6,14 +6,19 @@ import com.gs.sea_kids.repo.CuriosidadeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -23,19 +28,25 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Validated
 public class CuriosidadeController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CuriosidadeController.class);
+
     @Autowired
     private CuriosidadeRepo curiosidadeRepo;
 
     @GetMapping
-    public ResponseEntity<CollectionModel<EntityModel<Curiosidade>>> getCuriosidades() {
-        List<EntityModel<Curiosidade>> curiosidades = curiosidadeRepo.findAll().stream()
+    public ResponseEntity<CollectionModel<EntityModel<Curiosidade>>> getCuriosidades(@RequestParam(defaultValue = "0") int page,
+                                                                                     @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Curiosidade> curiosidadePage = curiosidadeRepo.findAll(pageable);
+
+        List<EntityModel<Curiosidade>> curiosidades = curiosidadePage.stream()
                 .map(curiosidade -> EntityModel.of(curiosidade,
                         linkTo(methodOn(CuriosidadeController.class).getCuriosidade(curiosidade.getId())).withSelfRel(),
-                        linkTo(methodOn(CuriosidadeController.class).getCuriosidades()).withRel("curiosidades")))
+                        linkTo(methodOn(CuriosidadeController.class).getCuriosidades(page, size)).withRel("curiosidades")))
                 .collect(Collectors.toList());
 
         CollectionModel<EntityModel<Curiosidade>> collectionModel = CollectionModel.of(curiosidades);
-        collectionModel.add(linkTo(methodOn(CuriosidadeController.class).getCuriosidades()).withSelfRel());
+        collectionModel.add(linkTo(methodOn(CuriosidadeController.class).getCuriosidades(page, size)).withSelfRel());
 
         return ResponseEntity.ok(collectionModel);
     }
@@ -47,18 +58,19 @@ public class CuriosidadeController {
 
         EntityModel<Curiosidade> curiosidadeModel = EntityModel.of(curiosidade,
                 linkTo(methodOn(CuriosidadeController.class).getCuriosidade(id)).withSelfRel(),
-                linkTo(methodOn(CuriosidadeController.class).getCuriosidades()).withRel("curiosidades"));
+                linkTo(methodOn(CuriosidadeController.class).getCuriosidades(0, 10)).withRel("curiosidades"));
 
         return ResponseEntity.ok(curiosidadeModel);
     }
 
     @PostMapping
     public ResponseEntity<EntityModel<Curiosidade>> saveCuriosidade(@Valid @RequestBody Curiosidade curiosidade) {
+
         Curiosidade savedCuriosidade = curiosidadeRepo.save(curiosidade);
 
         EntityModel<Curiosidade> curiosidadeModel = EntityModel.of(savedCuriosidade,
                 linkTo(methodOn(CuriosidadeController.class).getCuriosidade(savedCuriosidade.getId())).withSelfRel(),
-                linkTo(methodOn(CuriosidadeController.class).getCuriosidades()).withRel("curiosidades"));
+                linkTo(methodOn(CuriosidadeController.class).getCuriosidades(0, 10)).withRel("curiosidades"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(curiosidadeModel);
     }
@@ -75,7 +87,7 @@ public class CuriosidadeController {
 
         EntityModel<Curiosidade> curiosidadeModel = EntityModel.of(updatedCuriosidade,
                 linkTo(methodOn(CuriosidadeController.class).getCuriosidade(updatedCuriosidade.getId())).withSelfRel(),
-                linkTo(methodOn(CuriosidadeController.class).getCuriosidades()).withRel("curiosidades"));
+                linkTo(methodOn(CuriosidadeController.class).getCuriosidades(0, 10)).withRel("curiosidades"));
 
         return ResponseEntity.ok(curiosidadeModel);
     }

@@ -9,26 +9,24 @@ import java.util.List;
 @Entity
 public class Cadastro {
 
+    @Column(name = "id_cd")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    @NotEmpty(message = "O nome do cadastro não pode estar vazio")
+    @Column(name = "nome_cd", length = 100)
     private String nome;
-    @Column
-    @NotEmpty(message = "O email do cadastro não pode estar vazio")
+    @Column(name = "email_cd", length = 100)
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "Formato de email inválido")
     private String email;
-    @Column
-    @NotEmpty(message = "A senha não pode estar vazia")
+    @Column(name = "senha_cd", length = 100)
     private String senha;
 
     @ManyToOne
-    @JoinColumn(name = "app_id")
+    @JoinColumn(name = "app_id_app")
     private App app;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "cliente_cl_id")
     private Cliente cliente;
 
     @OneToMany(mappedBy = "cadastro", cascade = CascadeType.ALL)

@@ -9,23 +9,21 @@ import java.util.List;
 @Entity
 public class Login {
 
+    @Column(name = "id_lg")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    @NotEmpty(message = "O email do login não pode estar vazio")
-    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "Formato de email inválido")
+    @Column(name = "email_lg", length = 100)
     private String email;
-    @Column
-    @NotEmpty(message = "A senha do login não pode estar vazia")
+    @Column(name = "senha_lg", length = 100)
     private String senha;
 
     @ManyToOne
-    @JoinColumn(name = "cadastro_id")
+    @JoinColumn(name = "cadastro_id_cd")
     private Cadastro cadastro;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "cliente_cl_id")
     private Cliente cliente;
 
     public Long getId() {

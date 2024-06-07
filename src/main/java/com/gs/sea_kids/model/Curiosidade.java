@@ -7,23 +7,24 @@ import jakarta.validation.constraints.Pattern;
 import java.util.List;
 
 @Entity
+@Table(name = "curiosidades")
 public class Curiosidade {
 
+    @Column(name = "id_cs")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    @NotEmpty(message = "O titulo da curiosidade não pode estar vazio")
+    @Column(name = "titulo_cs", length = 100)
     private String titulo;
-    @Column
-    @NotEmpty(message = "A imagem da curiosidade não pode estar vazio")
-    private String imagem; // Atualizar o tipo
-    @Column
-    @NotEmpty(message = "O texto da curiosidade não pode estar vazio")
-    private String texto; // Atualizar o tipo
+    @Column(name = "imagem_cs")
+    @Lob
+    private String imagem;
+    @Column(name = "texto_cs")
+    @Lob
+    private String texto;
 
     @ManyToOne
-    @JoinColumn(name = "app_id")
+    @JoinColumn(name = "app_id_app")
     private App app;
 
     public Long getId() {
