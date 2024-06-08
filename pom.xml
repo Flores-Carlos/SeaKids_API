@@ -11,6 +11,7 @@
 	<groupId>com.gs</groupId>
 	<artifactId>SeaKids_API</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>sea_kids</name>
 	<description>Java Sprint</description>
 	<properties>
